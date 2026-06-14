@@ -2,3 +2,5 @@ node_modules/
 .venv/
 .semgrep-local/
 semgrep-*.json
+*.docx
+~$*.docx

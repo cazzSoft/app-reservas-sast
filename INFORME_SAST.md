@@ -2,6 +2,7 @@
 
 Fecha de ejecucion: 13 de junio de 2026  
 Repositorio analizado: https://github.com/agcudco/app-reservas  
+Autores: Vera Zambrano Jorge Maron (`maronv64`) y Cristhian Alfredo Zambrano Zambrano (`cazzSoft`)  
 Proyecto: ReservasEC, aplicacion fullstack con microservicios Node.js/Express, frontend Next.js, MongoDB y Docker.
 
 ## 1. Preparacion del entorno
@@ -99,54 +100,67 @@ Observacion: el pack OWASP Top 10 fue mas especifico y reporto menos hallazgos q
 
 ## 4. Analisis 3: Semgrep con cuenta Developer
 
-Estado actual: pendiente de credenciales.
+Estado actual: completado.
 
-Para completarlo se necesita iniciar sesion en Semgrep Developer o usar un token de Semgrep. Los comandos recomendados son:
+Se conecto el repositorio propio `cazzSoft/app-reservas-sast` con Semgrep Cloud y tambien se inicio sesion desde la CLI con:
 
 ```powershell
-$env:SEMGREP_APP_TOKEN='TOKEN_DE_SEMGREP'
-$env:SEMGREP_LOG_FILE='C:\MGSRT\Practicas\SAST\app-reservas\.semgrep-local\semgrep.log'
-$env:SEMGREP_SETTINGS_FILE='C:\MGSRT\Practicas\SAST\app-reservas\.semgrep-local\settings.yaml'
-$env:SEMGREP_VERSION_CACHE_PATH='C:\MGSRT\Practicas\SAST\app-reservas\.semgrep-local\version-cache'
-.\.venv\Scripts\semgrep.exe ci --json-output semgrep-developer.json
+.\.venv\Scripts\semgrep.exe login
+.\.venv\Scripts\semgrep.exe ci
 ```
 
-Lo esperable es que Semgrep Developer agregue valor con politicas centralizadas, vista web, historico del proyecto, posibilidad de priorizacion y, segun la configuracion de la cuenta, reglas adicionales o gestion de hallazgos. Para presentacion, se debe incluir captura del dashboard de Semgrep con el proyecto analizado.
+Resultado de Semgrep Cloud:
+
+| Metrica | Resultado |
+|---|---:|
+| Repositorio | `cazzSoft/app-reservas-sast` |
+| Rama | `main` |
+| Tipo de scan | `full` |
+| Estado | `Completed` |
+| Duracion | 46s |
+| Total findings | 168 |
+| Code findings | 20 |
+| Secrets findings | 0 |
+| Supply Chain findings | 148 |
+
+Resultado de `semgrep ci` desde consola:
+
+| Metrica | Resultado |
+|---|---:|
+| Estado | CI scan completed successfully |
+| Hallazgos | 166 |
+| Hallazgos blocking | 0 |
+| Reglas ejecutadas | 124441 |
+| Archivos escaneados | 79 |
+| Lineas parseadas | ~100% |
+| Motor | Semgrep Pro Engine 1.166.0 |
+
+Semgrep Developer agrego valor frente al analisis local porque ejecuto reglas Pro y analisis de Supply Chain, ademas de registrar los resultados en el dashboard web del proyecto.
 
 ## 5. Analisis 4: SonarQube Cloud
 
-Estado actual: pendiente de repositorio propio y credenciales.
+Estado actual: completado.
 
-La actividad exige subir el proyecto a un repositorio propio. Para completarlo se necesita:
+Se importo el repositorio propio `cazzSoft/app-reservas-sast` en SonarQube Cloud y se ejecuto el analisis del proyecto.
 
-| Requisito | Detalle |
+Resultado observado en el resumen de SonarQube Cloud:
+
+| Metrica | Resultado |
 |---|---|
-| Repositorio propio | URL del repo de GitHub donde se subira `app-reservas`. |
-| Cuenta SonarQube Cloud | Acceso a https://sonarcloud.io o SonarQube Cloud actual. |
-| Organizacion y project key | Datos generados al crear/importar el proyecto en SonarQube Cloud. |
-| Token | `SONAR_TOKEN` para ejecutar el analisis o configurar GitHub Actions. |
+| Proyecto | `app-reservas-sast` |
+| Rama | `main` |
+| Lineas de codigo | 1.9k |
+| Ultimo analisis | Ejecutado correctamente |
+| Quality Gate | Not computed |
+| Security | 16 open issues, calificacion E |
+| Reliability | 13 open issues, calificacion B |
+| Maintainability | 24 open issues, calificacion A |
+| Security Hotspots | 19 |
+| Accepted issues | 0 |
+| Coverage | No configurado |
+| Duplications | 5.1% en 2.1k lineas |
 
-Comando base con scanner, una vez creado el proyecto en SonarQube Cloud:
-
-```powershell
-sonar-scanner `
-  -Dsonar.projectKey=TU_PROJECT_KEY `
-  -Dsonar.organization=TU_ORGANIZATION `
-  -Dsonar.sources=. `
-  -Dsonar.host.url=https://sonarcloud.io `
-  -Dsonar.token=TU_SONAR_TOKEN
-```
-
-Para la entrega, se debe registrar:
-
-| Metrica de SonarQube Cloud | Resultado a completar |
-|---|---|
-| Bugs | Pendiente |
-| Vulnerabilities | Pendiente |
-| Security Hotspots | Pendiente |
-| Code Smells | Pendiente |
-| Duplications | Pendiente |
-| Quality Gate | Pendiente |
+SonarQube Cloud aporto una vista mas amplia de calidad, mostrando seguridad, confiabilidad, mantenibilidad, duplicacion y estado del Quality Gate. En este caso, el Quality Gate aparece como `Not computed`, por lo que se recomienda ejecutar un nuevo analisis o revisar la configuracion del Quality Gate para que el estado quede calculado.
 
 ## 6. Comparativa
 
@@ -154,8 +168,8 @@ Para la entrega, se debe registrar:
 |---|---:|---|---|
 | Semgrep `--config auto` | 13 | Mayor cobertura en este proyecto; detecto Dockerfile root, HTTP inseguro y ausencia de CSRF. | Puede incluir avisos que requieren interpretacion contextual, como CSRF en APIs que no usan cookies. |
 | Semgrep `p/owasp-top-ten` | 8 | Enfocado en categorias OWASP; resultados mas concretos para seguridad web. | Menor cobertura; no reporto algunos avisos de auditoria detectados por `auto`. |
-| Semgrep Developer | Pendiente | Dashboard, historico, politicas por proyecto y mejor gestion para equipo. | Requiere cuenta/token y configuracion del proyecto. |
-| SonarQube Cloud | Pendiente | Excelente para calidad integral: bugs, vulnerabilidades, hotspots, code smells, duplicacion y quality gate. | Requiere subir a repo propio y configurar proyecto/token. |
+| Semgrep Developer | 166 por CLI / 168 en Cloud | Dashboard, historico, reglas Pro, politicas por proyecto y Supply Chain. | Requiere cuenta, GitHub App y login/token. |
+| SonarQube Cloud | 53 issues abiertos visibles por categoria | Excelente para calidad integral: seguridad, confiabilidad, mantenibilidad, duplicacion y quality gate. | El Quality Gate quedo como `Not computed` y la cobertura no esta configurada. |
 
 ## 7. Cual es mejor y por que
 
@@ -176,8 +190,8 @@ La practica confirma que el SAST ayuda a descubrir problemas temprano, antes del
 1. Agregar usuarios no root en todos los Dockerfile.
 2. Revisar la comunicacion HTTP entre microservicios y considerar HTTPS/mTLS o una red interna controlada con politicas claras.
 3. Evaluar CSRF segun el tipo de autenticacion. Si se usan cookies, agregar proteccion CSRF; si se usa JWT por header, documentar por que el riesgo es menor.
-4. Configurar Semgrep Developer con token y ejecutar `semgrep ci`.
-5. Subir el proyecto a un repositorio propio e importar en SonarQube Cloud.
+4. Importar el repositorio propio en SonarQube Cloud.
+5. Registrar metricas de SonarQube Cloud: bugs, vulnerabilities, security hotspots, code smells, duplicacion y quality gate.
 6. Adjuntar capturas de los dashboards de Semgrep y SonarQube Cloud en la presentacion final.
 
 ## 10. Archivos generados

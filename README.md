@@ -2,6 +2,11 @@
 
 **ReservasEC** es una plataforma fullstack de gestión de reservas desarrollada con una arquitectura de microservicios. Permite a los usuarios registrarse, iniciar sesión, gestionar su perfil, crear y cancelar reservas, y recibir notificaciones. El sistema está dockerizado para facilitar el despliegue local.
 
+## Autores
+
+- Vera Zambrano Jorge Marón - GitHub: [maronv64](https://github.com/maronv64)
+- Cristhian Alfredo Zambrano Zambrano - GitHub: [cazzSoft](https://github.com/cazzSoft)
+
 ## 🚀 Tecnologías principales
 
 - **Frontend:** Next.js + Tailwind CSS
